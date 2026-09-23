@@ -15,6 +15,10 @@ public class AppPreferences {
     private static final String KEY_CONTACTS = "emergency_contacts";
     private static final String KEY_CLINICIAN_REMINDER = "clinician_reminder_millis";
     private static final String KEY_LAST_HEALTH_TIP = "last_health_tip";
+    private static final String KEY_USER_NAME = "user_name";
+    private static final String KEY_USER_EMAIL = "user_email";
+    private static final String KEY_USER_PASSWORD = "user_password";
+    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
     private static final String RECORD_SEP = "\n";
     private static final String FIELD_SEP = "|";
     private final SharedPreferences prefs;
@@ -112,5 +116,32 @@ public class AppPreferences {
             this.name = name;
             this.phone = phone;
         }
+    }
+    public void saveUser(String name, String email, String password) {
+        prefs.edit()
+                .putString(KEY_USER_NAME, name)
+                .putString(KEY_USER_EMAIL, email)
+                .putString(KEY_USER_PASSWORD, password)
+                .apply();
+    }
+
+    public String getUserName() {
+        return prefs.getString(KEY_USER_NAME, "");
+    }
+
+    public String getUserEmail() {
+        return prefs.getString(KEY_USER_EMAIL, "");
+    }
+
+    public String getUserPassword() {
+        return prefs.getString(KEY_USER_PASSWORD, "");
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        prefs.edit().putBoolean(KEY_IS_LOGGED_IN, loggedIn).apply();
+    }
+
+    public boolean isLoggedIn() {
+        return prefs.getBoolean(KEY_IS_LOGGED_IN, false);
     }
 }

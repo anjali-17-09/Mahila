@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <!-- Mahila Theme -->
+    <color name="primary">#7C5CFC</color>
+    <color name="primary_dark">#6448D8</color>
+
+    <color name="secondary">#B8A5FF</color>
+
+    <color name="accent">#FF8FAB</color>
+
+    <color name="background">#FAF7FF</color>
+
+    <color name="card_background">#FFFFFF</color>
+
+    <color name="text_primary">#1F1F1F</color>
+
+    <color name="text_secondary">#6B7280</color>
+
+    <color name="success">#4CAF50</color>
+
+    <color name="warning">#FFB74D</color>
+
+    <color name="error">#EF5350</color>
+
+    <color name="white">#FFFFFF</color>
+
+    <color name="black">#000000</color>
+
 </resources>
