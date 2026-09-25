@@ -1,5 +1,6 @@
 package com.example.mahila;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import java.util.Locale;
 public class SymptomLoggerActivity extends AppCompatActivity {
 
     private AppPreferences preferences;
+    private DatabaseHelper dbHelper;
     private ChipGroup chipGroup;
     private TextView historyText;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault());
@@ -51,6 +53,7 @@ public class SymptomLoggerActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         preferences = new AppPreferences(this);
+        dbHelper = new DatabaseHelper(this);
         chipGroup = findViewById(R.id.symptom_chip_group);
         historyText = findViewById(R.id.text_symptom_history);
 
@@ -84,19 +87,58 @@ public class SymptomLoggerActivity extends AppCompatActivity {
             return;
         }
 
-        String entry = dateFormat.format(new Date()) + " — " + String.join(", ", names);
-        preferences.addSymptomEntry(entry);
-        chipGroup.clearCheck();
-        showHistory();
-        Toast.makeText(this, "Symptoms saved", Toast.LENGTH_SHORT).show();
+        String userEmail = preferences.getCurrentUserEmail();
+        if (userEmail.isEmpty()) {
+            Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String symptomString = String.join(", ", names);
+        String createdAt = dateFormat.format(new Date());
+
+        boolean saved = dbHelper.saveSymptom(userEmail, symptomString, createdAt);
+        if (saved) {
+            chipGroup.clearCheck();
+            showHistory();
+            Toast.makeText(this, "Symptoms saved", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Failed to save symptoms", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showHistory() {
-        String history = preferences.getSymptomHistoryText();
-        if (history.isEmpty()) {
+        String userEmail = preferences.getCurrentUserEmail();
+        if (userEmail.isEmpty()) {
+            historyText.setText("No user logged in.");
+            return;
+        }
+
+        Cursor cursor = dbHelper.getSymptoms(userEmail);
+        if (cursor == null) {
+            historyText.setText("No symptoms saved yet.");
+            return;
+        }
+
+        StringBuilder historyBuilder = new StringBuilder();
+        int symptomIndex = cursor.getColumnIndex(DatabaseHelper.KEY_SYMPTOM);
+        int createdAtIndex = cursor.getColumnIndex(DatabaseHelper.KEY_CREATED_AT);
+
+        while (cursor.moveToNext()) {
+            String symptom = symptomIndex != -1 ? cursor.getString(symptomIndex) : "";
+            String createdAt = createdAtIndex != -1 ? cursor.getString(createdAtIndex) : "";
+
+            if (historyBuilder.length() > 0) {
+                historyBuilder.append("\n");
+            }
+            historyBuilder.append(createdAt).append(" — ").append(symptom);
+        }
+        cursor.close();
+
+        if (historyBuilder.length() == 0) {
             historyText.setText("No symptoms saved yet.");
         } else {
-            historyText.setText(history);
+            historyText.setText(historyBuilder.toString());
         }
     }
 }
+

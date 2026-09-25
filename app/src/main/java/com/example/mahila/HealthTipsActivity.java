@@ -60,22 +60,29 @@ public class HealthTipsActivity extends AppCompatActivity {
     }
 
     private void saveTip(String title) {
-        preferences.saveLastHealthTip(title);
+        String userEmail = preferences.getCurrentUserEmail();
+        if (userEmail.isEmpty()) {
+            Toast.makeText(this, "Guest Mode: Health tip preferences are not saved.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        preferences.saveLastHealthTip(userEmail, title);
         showLastOpenedTip();
         Toast.makeText(this, "Saved \"" + title + "\" as your last opened tip", Toast.LENGTH_SHORT).show();
     }
 
     private void showLastOpenedTip() {
-        String lastTip = preferences.getLastHealthTip();
+        String userEmail = preferences.getCurrentUserEmail();
+        String lastTip = preferences.getLastHealthTip(userEmail);
         hydratedTitle.setText(labelFor("Stay hydrated", lastTip));
         movementTitle.setText(labelFor("Gentle movement", lastTip));
         restTitle.setText(labelFor("Rest when you need it", lastTip));
     }
 
     private String labelFor(String title, String lastTip) {
-        if (title.equals(lastTip)) {
+        if (!lastTip.isEmpty() && title.equals(lastTip)) {
             return title + " (last opened)";
         }
         return title;
     }
 }
+

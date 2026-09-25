@@ -1,6 +1,7 @@
 package com.example.mahila;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ public class MedicalAssistanceActivity extends AppCompatActivity {
             "Book a consultation or visit a nearby clinic for personalized care.";
 
     private AppPreferences preferences;
+    private DatabaseHelper dbHelper;
     private TextView introText;
     private TextView clinicianDetailText;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
@@ -53,6 +55,7 @@ public class MedicalAssistanceActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         preferences = new AppPreferences(this);
+        dbHelper = new DatabaseHelper(this);
         introText = findViewById(R.id.text_medical_intro);
         clinicianDetailText = findViewById(R.id.text_clinician_detail);
 
@@ -72,28 +75,60 @@ public class MedicalAssistanceActivity extends AppCompatActivity {
     }
 
     private void saveClinicianReminder() {
-        preferences.saveClinicianReminder(System.currentTimeMillis());
+        String userEmail = preferences.getCurrentUserEmail();
+        if (userEmail.isEmpty()) {
+            Toast.makeText(this, "Guest Mode: Clinician reminders are not saved.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        preferences.saveClinicianReminder(userEmail, System.currentTimeMillis());
         showSavedInfo();
         Toast.makeText(this, "Reminder saved. Visit a clinic when you can.", Toast.LENGTH_SHORT).show();
     }
 
     private void showSavedInfo() {
+        String userEmail = preferences.getCurrentUserEmail();
         StringBuilder intro = new StringBuilder(INTRO_TEXT);
-        if (preferences.hasLastPeriod()) {
-            intro.append("\n\nLast period start: ")
-                    .append(dateFormat.format(new Date(preferences.getLastPeriodMillis())));
+
+        if (!userEmail.isEmpty()) {
+            // Load latest period date from DatabaseHelper
+            Cursor periodCursor = dbHelper.getPeriod(userEmail);
+            if (periodCursor != null) {
+                if (periodCursor.moveToFirst()) {
+                    int dateIndex = periodCursor.getColumnIndex(DatabaseHelper.KEY_PERIOD_DATE);
+                    if (dateIndex != -1) {
+                        long periodMillis = periodCursor.getLong(dateIndex);
+                        intro.append("\n\nLast period start: ")
+                                .append(dateFormat.format(new Date(periodMillis)));
+                    }
+                }
+                periodCursor.close();
+            }
+
+            // Load latest symptom from DatabaseHelper
+            Cursor symptomCursor = dbHelper.getSymptoms(userEmail);
+            if (symptomCursor != null) {
+                if (symptomCursor.moveToFirst()) {
+                    int symptomIndex = symptomCursor.getColumnIndex(DatabaseHelper.KEY_SYMPTOM);
+                    int dateIndex = symptomCursor.getColumnIndex(DatabaseHelper.KEY_CREATED_AT);
+                    if (symptomIndex != -1) {
+                        String symptom = symptomCursor.getString(symptomIndex);
+                        String createdAt = dateIndex != -1 ? symptomCursor.getString(dateIndex) : "";
+                        intro.append("\nLatest symptoms: ").append(createdAt).append(" — ").append(symptom);
+                    }
+                }
+                symptomCursor.close();
+            }
         }
-        String latestSymptom = preferences.getLatestSymptomEntry();
-        if (!latestSymptom.isEmpty()) {
-            intro.append("\nLatest symptoms: ").append(latestSymptom);
-        }
+
         introText.setText(intro.toString());
 
-        if (preferences.hasClinicianReminder()) {
+        long reminderMillis = preferences.getClinicianReminderMillis(userEmail);
+        if (reminderMillis > 0L) {
             clinicianDetailText.setText(CLINICIAN_DETAIL + " Reminder saved on "
-                    + dateFormat.format(new Date(preferences.getClinicianReminderMillis())) + ".");
+                    + dateFormat.format(new Date(reminderMillis)) + ".");
         } else {
             clinicianDetailText.setText(CLINICIAN_DETAIL);
         }
     }
 }
+

@@ -1,7 +1,9 @@
 package com.example.mahila;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,11 +23,13 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmergencyContactsActivity extends AppCompatActivity {
 
     private AppPreferences preferences;
+    private DatabaseHelper dbHelper;
     private TextInputLayout nameLayout;
     private TextInputLayout phoneLayout;
     private TextInputEditText nameInput;
@@ -33,7 +37,19 @@ public class EmergencyContactsActivity extends AppCompatActivity {
     private MaterialButton saveButton;
     private LinearLayout contactsContainer;
     private TextView emptyText;
-    private String editingId;
+    private Long editingId = null;
+
+    private static class ContactItem {
+        long id;
+        String name;
+        String phone;
+
+        ContactItem(long id, String name, String phone) {
+            this.id = id;
+            this.name = name;
+            this.phone = phone;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +73,7 @@ public class EmergencyContactsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         preferences = new AppPreferences(this);
+        dbHelper = new DatabaseHelper(this);
         nameLayout = findViewById(R.id.layout_contact_name);
         phoneLayout = findViewById(R.id.layout_contact_phone);
         nameInput = findViewById(R.id.input_contact_name);
@@ -78,9 +95,39 @@ public class EmergencyContactsActivity extends AppCompatActivity {
         showContacts();
     }
 
+    private List<ContactItem> getContactsForCurrentUser() {
+        List<ContactItem> list = new ArrayList<>();
+        String userEmail = preferences.getCurrentUserEmail();
+        if (userEmail.isEmpty()) {
+            return list;
+        }
+
+        Cursor cursor = dbHelper.getContacts(userEmail);
+        if (cursor != null) {
+            int idIndex = cursor.getColumnIndex(DatabaseHelper.KEY_ID);
+            int nameIndex = cursor.getColumnIndex(DatabaseHelper.KEY_CONTACT_NAME);
+            int phoneIndex = cursor.getColumnIndex(DatabaseHelper.KEY_CONTACT_PHONE);
+
+            while (cursor.moveToNext()) {
+                long id = idIndex != -1 ? cursor.getLong(idIndex) : -1;
+                String name = nameIndex != -1 ? cursor.getString(nameIndex) : "";
+                String phone = phoneIndex != -1 ? cursor.getString(phoneIndex) : "";
+                list.add(new ContactItem(id, name, phone));
+            }
+            cursor.close();
+        }
+        return list;
+    }
+
     private void saveContact() {
         nameLayout.setError(null);
         phoneLayout.setError(null);
+
+        String userEmail = preferences.getCurrentUserEmail();
+        if (userEmail.isEmpty()) {
+            Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String name = textOf(nameInput);
         String phone = textOf(phoneInput);
@@ -100,10 +147,10 @@ public class EmergencyContactsActivity extends AppCompatActivity {
             return;
         }
 
-        List<AppPreferences.EmergencyContact> contacts = preferences.getContacts();
-        for (AppPreferences.EmergencyContact contact : contacts) {
+        List<ContactItem> contacts = getContactsForCurrentUser();
+        for (ContactItem contact : contacts) {
             boolean sameNumber = contact.phone.replaceAll("\\D", "").equals(digits);
-            boolean differentRecord = editingId == null || !contact.id.equals(editingId);
+            boolean differentRecord = editingId == null || contact.id != editingId;
             if (sameNumber && differentRecord) {
                 phoneLayout.setError("This phone number is already saved.");
                 return;
@@ -111,28 +158,27 @@ public class EmergencyContactsActivity extends AppCompatActivity {
         }
 
         if (editingId == null) {
-            String id = String.valueOf(System.currentTimeMillis());
-            contacts.add(new AppPreferences.EmergencyContact(id, name, phone));
-            Toast.makeText(this, "Contact saved", Toast.LENGTH_SHORT).show();
+            boolean success = dbHelper.saveContact(userEmail, name, phone);
+            if (success) {
+                Toast.makeText(this, "Contact saved", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Failed to save contact", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            boolean updated = false;
-            for (AppPreferences.EmergencyContact contact : contacts) {
-                if (contact.id.equals(editingId)) {
-                    contact.name = name;
-                    contact.phone = phone;
-                    updated = true;
-                    break;
-                }
-            }
-            if (!updated) {
-                contacts.add(new AppPreferences.EmergencyContact(editingId, name, phone));
-            }
+            ContentValues cv = new ContentValues();
+            cv.put(DatabaseHelper.KEY_CONTACT_NAME, name);
+            cv.put(DatabaseHelper.KEY_CONTACT_PHONE, phone);
+            dbHelper.getWritableDatabase().update(
+                    DatabaseHelper.TABLE_CONTACTS,
+                    cv,
+                    DatabaseHelper.KEY_ID + " = ? AND " + DatabaseHelper.KEY_USER_EMAIL + " = ?",
+                    new String[]{String.valueOf(editingId), userEmail}
+            );
             Toast.makeText(this, "Contact updated", Toast.LENGTH_SHORT).show();
             editingId = null;
             saveButton.setText("Save contact");
         }
 
-        preferences.saveContacts(contacts);
         nameInput.setText("");
         phoneInput.setText("");
         showContacts();
@@ -140,11 +186,11 @@ public class EmergencyContactsActivity extends AppCompatActivity {
 
     private void showContacts() {
         contactsContainer.removeAllViews();
-        List<AppPreferences.EmergencyContact> contacts = preferences.getContacts();
+        List<ContactItem> contacts = getContactsForCurrentUser();
         emptyText.setVisibility(contacts.isEmpty() ? View.VISIBLE : View.GONE);
 
         LayoutInflater inflater = LayoutInflater.from(this);
-        for (AppPreferences.EmergencyContact contact : contacts) {
+        for (ContactItem contact : contacts) {
             View item = inflater.inflate(R.layout.item_emergency_contact, contactsContainer, false);
             TextView nameView = item.findViewById(R.id.text_contact_name);
             TextView phoneView = item.findViewById(R.id.text_contact_phone);
@@ -161,7 +207,7 @@ public class EmergencyContactsActivity extends AppCompatActivity {
         }
     }
 
-    private void startEdit(AppPreferences.EmergencyContact contact) {
+    private void startEdit(ContactItem contact) {
         editingId = contact.id;
         nameLayout.setError(null);
         phoneLayout.setError(null);
@@ -171,16 +217,17 @@ public class EmergencyContactsActivity extends AppCompatActivity {
         nameInput.requestFocus();
     }
 
-    private void deleteContact(String id) {
-        List<AppPreferences.EmergencyContact> contacts = preferences.getContacts();
-        for (int i = contacts.size() - 1; i >= 0; i--) {
-            if (contacts.get(i).id.equals(id)) {
-                contacts.remove(i);
-            }
+    private void deleteContact(long id) {
+        String userEmail = preferences.getCurrentUserEmail();
+        if (!userEmail.isEmpty()) {
+            dbHelper.getWritableDatabase().delete(
+                    DatabaseHelper.TABLE_CONTACTS,
+                    DatabaseHelper.KEY_ID + " = ? AND " + DatabaseHelper.KEY_USER_EMAIL + " = ?",
+                    new String[]{String.valueOf(id), userEmail}
+            );
         }
-        preferences.saveContacts(contacts);
 
-        if (id.equals(editingId)) {
+        if (editingId != null && editingId == id) {
             editingId = null;
             nameInput.setText("");
             phoneInput.setText("");
@@ -210,3 +257,4 @@ public class EmergencyContactsActivity extends AppCompatActivity {
         return input.getText() == null ? "" : input.getText().toString().trim();
     }
 }
+

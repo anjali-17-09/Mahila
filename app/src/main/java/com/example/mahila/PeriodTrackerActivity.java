@@ -1,6 +1,7 @@
 package com.example.mahila;
 
 import android.app.DatePickerDialog;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class PeriodTrackerActivity extends AppCompatActivity {
 
     private AppPreferences preferences;
+    private DatabaseHelper dbHelper;
     private TextView cycleDayText;
     private TextView nextPeriodText;
     private TextView lastPeriodText;
@@ -51,6 +53,7 @@ public class PeriodTrackerActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         preferences = new AppPreferences(this);
+        dbHelper = new DatabaseHelper(this);
         cycleDayText = findViewById(R.id.text_cycle_day);
         nextPeriodText = findViewById(R.id.text_next_period);
         lastPeriodText = findViewById(R.id.text_last_period);
@@ -65,10 +68,30 @@ public class PeriodTrackerActivity extends AppCompatActivity {
         showCycleInfo();
     }
 
+    private long getLastPeriodMillisForUser() {
+        String email = preferences.getCurrentUserEmail();
+        if (email.isEmpty()) {
+            return -1L;
+        }
+        Cursor cursor = dbHelper.getPeriod(email);
+        long lastPeriodMillis = -1L;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndex(DatabaseHelper.KEY_PERIOD_DATE);
+                if (columnIndex != -1) {
+                    lastPeriodMillis = cursor.getLong(columnIndex);
+                }
+            }
+            cursor.close();
+        }
+        return lastPeriodMillis;
+    }
+
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
-        if (preferences.hasLastPeriod()) {
-            calendar.setTimeInMillis(preferences.getLastPeriodMillis());
+        long lastPeriodMillis = getLastPeriodMillisForUser();
+        if (lastPeriodMillis > 0L) {
+            calendar.setTimeInMillis(lastPeriodMillis);
         }
 
         DatePickerDialog dialog = new DatePickerDialog(
@@ -96,9 +119,19 @@ public class PeriodTrackerActivity extends AppCompatActivity {
                         return;
                     }
 
-                    preferences.saveLastPeriodMillis(selected.getTimeInMillis());
-                    showCycleInfo();
-                    Toast.makeText(this, "Last period date saved", Toast.LENGTH_SHORT).show();
+                    String userEmail = preferences.getCurrentUserEmail();
+                    if (userEmail.isEmpty()) {
+                        Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    boolean saved = dbHelper.savePeriod(userEmail, selected.getTimeInMillis());
+                    if (saved) {
+                        showCycleInfo();
+                        Toast.makeText(this, "Last period date saved", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Failed to save period date", Toast.LENGTH_SHORT).show();
+                    }
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -109,14 +142,14 @@ public class PeriodTrackerActivity extends AppCompatActivity {
     }
 
     private void showCycleInfo() {
-        if (!preferences.hasLastPeriod()) {
+        long lastPeriodMillis = getLastPeriodMillisForUser();
+        if (lastPeriodMillis <= 0L) {
             cycleDayText.setText("No period logged yet");
             nextPeriodText.setText("Log your last period start to see your next expected date.");
             lastPeriodText.setText("Not saved yet");
             return;
         }
 
-        long lastPeriodMillis = preferences.getLastPeriodMillis();
         Calendar lastPeriod = startOfDay(lastPeriodMillis);
         Calendar today = startOfToday();
         Calendar nextPeriod = startOfDay(lastPeriodMillis);
@@ -163,3 +196,4 @@ public class PeriodTrackerActivity extends AppCompatActivity {
         return TimeUnit.MILLISECONDS.toDays(diff);
     }
 }
+

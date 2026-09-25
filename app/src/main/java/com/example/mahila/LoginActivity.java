@@ -15,6 +15,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin, btnGuest;
     private TextView txtSignup;
     private AppPreferences appPreferences;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         appPreferences = new AppPreferences(this);
+        dbHelper = new DatabaseHelper(this);
 
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
@@ -35,10 +37,15 @@ public class LoginActivity extends AppCompatActivity {
             String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
 
-            if (email.equals(appPreferences.getUserEmail())
-                    && password.equals(appPreferences.getUserPassword())) {
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (dbHelper.checkLogin(email, password)) {
 
                 appPreferences.setLoggedIn(true);
+                appPreferences.setCurrentUserEmail(email);
 
                 startActivity(new Intent(this, WelcomeActivity.class));
                 finish();
@@ -51,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         btnGuest.setOnClickListener(v -> {
+            appPreferences.setLoggedIn(false);
+            appPreferences.clearCurrentUserEmail();
             startActivity(new Intent(this, HomeActivity.class));
         });
 
@@ -58,4 +67,4 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(this, SignupActivity.class));
         });
     }
-}
+}
