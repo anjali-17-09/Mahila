@@ -48,6 +48,11 @@ public class HomeActivity extends AppCompatActivity {
 
         // Profile Card
         bindCard(R.id.card_profile, ProfileActivity.class);
+
+        // New Feature Cards
+        bindCard(R.id.card_ai_chat, AiChatActivity.class);
+        bindCard(R.id.card_quiz, QuizActivity.class);
+        bindCard(R.id.card_settings, SettingsActivity.class);
     }
 
     private void bindCard(int cardId, Class<?> destination) {

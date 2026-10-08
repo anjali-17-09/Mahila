@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">Mahila</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_tracker">Tracker</string>
+    <string name="nav_assistance">Assistance</string>
+    <string name="nav_awareness">Awareness</string>
+    <string name="nav_profile">Profile</string>
+    
+    <string name="drawer_settings">Settings</string>
+    <string name="drawer_language">Language Settings</string>
+    <string name="drawer_notifications">Notification Settings</string>
+    <string name="drawer_privacy">Privacy Settings</string>
+    <string name="drawer_about">About Platform</string>
+    <string name="drawer_logout">Logout</string>
+
+    <string name="greeting_morning">Good Morning</string>
+    <string name="cycle_day">Day %1$d of Cycle</string>
+    <string name="phase_menstrual">Menstrual Phase</string>
+    <string name="phase_follicular">Follicular Phase</string>
+    <string name="phase_ovulatory">Ovulatory Phase</string>
+    <string name="phase_luteal">Luteal Phase</string>
+    <string name="next_period">Next Period: %1$s</string>
+    <string name="ovulation_window">Fertile Window: %1$s</string>
+
+    <string name="quick_actions">Quick Actions</string>
+    <string name="btn_log_period">Log Period</string>
+    <string name="btn_log_mood">Log Mood</string>
+    <string name="btn_ai_chat">AI Assistant</string>
+    <string name="btn_sos">Emergency SOS</string>
+
+    <string name="title_health_insights">Health Insights</string>
+    <string name="title_reminders">Upcoming Reminders</string>
+    <string name="title_ai_suggestions">AI Wellness Suggestions</string>
+    <string name="ai_disclaimer">AI Assistant provides educational information only and does not provide medical diagnosis. Consult a qualified doctor.</string>
 </resources>

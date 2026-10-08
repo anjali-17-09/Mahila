@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">மகிளா</string>
+    <string name="nav_home">முகப்பு</string>
+    <string name="nav_tracker">ட்ராக்கர்</string>
+    <string name="nav_assistance">உதவி</string>
+    <string name="nav_awareness">விழிப்புணர்வு</string>
+    <string name="nav_profile">சுயவிவரம்</string>
+
+    <string name="drawer_settings">அமைப்புகள்</string>
+    <string name="drawer_language">மொழி அமைப்புகள்</string>
+    <string name="drawer_notifications">அறிவிப்பு அமைப்புகள்</string>
+    <string name="drawer_privacy">தனியுரிமை அமைப்புகள்</string>
+    <string name="drawer_about">பற்றி</string>
+    <string name="drawer_logout">வெளியேறு</string>
+
+    <string name="greeting_morning">காலை வணக்கம்</string>
+    <string name="cycle_day">சுழற்சி நாள் %1$d</string>
+    <string name="phase_menstrual">மாதவிடாய் நிலை</string>
+    <string name="phase_follicular">ஃபோலிகுலார் நிலை</string>
+    <string name="phase_ovulatory">அண்டவிடுப்பின் நிலை</string>
+    <string name="phase_luteal">லூட்டல் நிலை</string>
+    <string name="next_period">அடுத்த மாதவிடாய்: %1$s</string>
+    <string name="ovulation_window">கருவுறுதல் காலம்: %1$s</string>
+
+    <string name="quick_actions">விரைவு చర్యக்கள்</string>
+    <string name="btn_log_period">மாதவிடாய் பதிவு செய்</string>
+    <string name="btn_log_mood">மனநிலை பதிவு செய்</string>
+    <string name="btn_ai_chat">AI உதவியாளர்</string>
+    <string name="btn_sos">அவசர SOS</string>
+
+    <string name="title_health_insights">சுகாதார நுண்ணறிவு</string>
+    <string name="title_reminders">வரவிருக்கும் நினைவூட்டல்கள்</string>
+    <string name="title_ai_suggestions">AI ஆலோசனைகள்</string>
+    <string name="ai_disclaimer">AI உதவி கல்வித் தகவலை மட்டுமே வழங்குகிறது. மருத்துவரை அணுகவும்.</string>
+</resources>

@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">మహిళ</string>
+    <string name="nav_home">హోమ్</string>
+    <string name="nav_tracker">ట్రాకర్</string>
+    <string name="nav_assistance">సహాయం</string>
+    <string name="nav_awareness">అవగాహన</string>
+    <string name="nav_profile">ప్రొఫైల్</string>
+
+    <string name="drawer_settings">సెట్టింగ్‌లు</string>
+    <string name="drawer_language">భాష సెట్టింగ్‌లు</string>
+    <string name="drawer_notifications">నోటిఫికేషన్ సెట్టింగ్‌లు</string>
+    <string name="drawer_privacy">గోప్యతా సెట్టింగ్‌లు</string>
+    <string name="drawer_about">గురించి</string>
+    <string name="drawer_logout">లాగ్ అవుట్</string>
+
+    <string name="greeting_morning">శుభోదయం</string>
+    <string name="cycle_day">చక్రం రోజు %1$d</string>
+    <string name="phase_menstrual">రుతుక్రమ దశ</string>
+    <string name="phase_follicular">ఫోలిక్యులర్ దశ</string>
+    <string name="phase_ovulatory">అండాల విడుదల దశ</string>
+    <string name="phase_luteal">లూటియల్ దశ</string>
+    <string name="next_period">తదుపరి రుతుక్రమం: %1$s</string>
+    <string name="ovulation_window">సంతానోత్పత్తి కాలం: %1$s</string>
+
+    <string name="quick_actions">త్వరిత చర్యలు</string>
+    <string name="btn_log_period">రుతుక్రమం నమోదు చేయండి</string>
+    <string name="btn_log_mood">మూడ్ నమోదు చేయండి</string>
+    <string name="btn_ai_chat">AI అసిస్టెంట్</string>
+    <string name="btn_sos">ఎమర్జెన్సీ SOS</string>
+
+    <string name="title_health_insights">ఆరోగ్య అవగాహన</string>
+    <string name="title_reminders">రాబోయే రిమైండర్‌లు</string>
+    <string name="title_ai_suggestions">AI సలహాలు</string>
+    <string name="ai_disclaimer">AI అసిస్టెంట్ విద్యా సమాచారాన్ని మాత్రమే అందిస్తుంది. వైద్యుడిని సంప్రదించండి.</string>
+</resources>

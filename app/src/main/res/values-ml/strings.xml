@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">മഹിള</string>
+    <string name="nav_home">ഹോം</string>
+    <string name="nav_tracker">ട്രാക്കർ</string>
+    <string name="nav_assistance">സഹായം</string>
+    <string name="nav_awareness">അവബോധം</string>
+    <string name="nav_profile">പ്രൊഫൈൽ</string>
+
+    <string name="drawer_settings">സെറ്റിംഗ്സുകൾ</string>
+    <string name="drawer_language">ഭാഷ സെറ്റിംഗ്സുകൾ</string>
+    <string name="drawer_notifications">അറിയിപ്പുകൾ</string>
+    <string name="drawer_privacy">സ്വകാര്യത</string>
+    <string name="drawer_about">വിവരങ്ങൾ</string>
+    <string name="drawer_logout">ലോഗ് ഔട്ട്</string>
+
+    <string name="greeting_morning">സുപ്രഭാതം</string>
+    <string name="cycle_day">ചക്രത്തിന്റെ %1$d-ാം ദിവസം</string>
+    <string name="phase_menstrual">ആർത്തവ ഘട്ടം</string>
+    <string name="phase_follicular">ഫോളിക്കികുലാർ ഘട്ടം</string>
+    <string name="phase_ovulatory">അണ്ഡോത്പാദന ഘട്ടം</string>
+    <string name="phase_luteal">ലൂട്ടിയൽ ഘട്ടം</string>
+    <string name="next_period">അടുത്ത ആർത്തവം: %1$s</string>
+    <string name="ovulation_window">അണ്ഡോത്പാദന സമയം: %1$s</string>
+
+    <string name="quick_actions">ദ്രുത പ്രവർത്തനങ്ങൾ</string>
+    <string name="btn_log_period">ആർത്തവം രേഖപ്പെടുത്തുക</string>
+    <string name="btn_log_mood">മനോനില രേഖപ്പെടുത്തുക</string>
+    <string name="btn_ai_chat">AI അസിസ്റ്റന്റ്</string>
+    <string name="btn_sos">അടിയന്തിര SOS</string>
+
+    <string name="title_health_insights">ആരോഗ്യ വിവരങ്ങൾ</string>
+    <string name="title_reminders">വരാനിരിക്കുന്ന ഓർമ്മപ്പെടുത്തലുകൾ</string>
+    <string name="title_ai_suggestions">AI നിർദ്ദേശങ്ങൾ</string>
+    <string name="ai_disclaimer">AI അസിസ്റ്റന്റ് വിദ്യാഭ്യാസ വിവരങ്ങൾ മാത്രം നൽകുന്നു. ഡോക്ടറെ കാണുക.</string>
+</resources>

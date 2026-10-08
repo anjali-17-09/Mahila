@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">महिला</string>
+    <string name="nav_home">होम</string>
+    <string name="nav_tracker">ट्रैकर</string>
+    <string name="nav_assistance">सहायता</string>
+    <string name="nav_awareness">जागरूकता</string>
+    <string name="nav_profile">प्रोफाइल</string>
+
+    <string name="drawer_settings">सेटिंग्स</string>
+    <string name="drawer_language">भाषा सेटिंग्स</string>
+    <string name="drawer_notifications">अधिसूचना सेटिंग्स</string>
+    <string name="drawer_privacy">गोपनीयता सेटिंग्स</string>
+    <string name="drawer_about">ऐप के बारे में</string>
+    <string name="drawer_logout">लॉग आउट</string>
+
+    <string name="greeting_morning">शुभ प्रभात</string>
+    <string name="cycle_day">चक्र का दिन %1$d</string>
+    <string name="phase_menstrual">मासिक धर्म चरण</string>
+    <string name="phase_follicular">फॉलिक्युलर चरण</string>
+    <string name="phase_ovulatory">ओव्यूलेटरी चरण</string>
+    <string name="phase_luteal">ल्यूटल चरण</string>
+    <string name="next_period">अगला मासिक धर्म: %1$s</string>
+    <string name="ovulation_window">उर्वर अवधि: %1$s</string>
+
+    <string name="quick_actions">त्वरित क्रियाएं</string>
+    <string name="btn_log_period">मासिक धर्म दर्ज करें</string>
+    <string name="btn_log_mood">मूड दर्ज करें</string>
+    <string name="btn_ai_chat">एआई सहायक</string>
+    <string name="btn_sos">आपातकालीन एसओएस</string>
+
+    <string name="title_health_insights">स्वास्थ्य अंतर्दृष्टि</string>
+    <string name="title_reminders">आगामी रिमाइंडर्स</string>
+    <string name="title_ai_suggestions">एआई स्वास्थ्य सुझाव</string>
+    <string name="ai_disclaimer">एआई सहायक केवल शैक्षणिक जानकारी प्रदान करता है। डॉक्टर से परामर्श लें।</string>
+</resources>
